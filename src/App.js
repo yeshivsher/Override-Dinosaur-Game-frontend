@@ -123,33 +123,11 @@ function App() {
         <div className={classes.containerGame}>
           <Game />
         </div>
-        <div className={classes.controlPanel}>
-          <Fab variant="extended" className={classes.button}>
-            send request 1
-      </Fab>
-          <Fab variant="extended" className={classes.button}>
-            send request 2
-      </Fab>
-          <Fab variant="extended" className={classes.button}>
-            send request 3
-      </Fab>
-        </div>
       </div>
       <div className={classes.middle}></div>
       <div className={classes.downBody}>
         <div className={classes.containerGame}>
-
-        </div>
-        <div className={classes.controlPanel}>
-          <Fab variant="extended" className={classes.button}>
-            send request 1
-      </Fab>
-          <Fab variant="extended" className={classes.button}>
-            send request 2
-      </Fab>
-          <Fab variant="extended" className={classes.button}>
-            send request 3
-      </Fab>
+          <Game />
         </div>
       </div>
     </div>
