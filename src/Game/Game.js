@@ -96,10 +96,6 @@ function App() {
     obstacles = generateObstacles();
 
     useEffect(() => {
-        if (window.innerWidth >= 680) {
-            canvas.width = 680;
-        }
-
         const onSpacePress = () => {
             switch (status) {
                 case STATUS.STOP:
@@ -318,9 +314,10 @@ function App() {
     return (
         <canvas
             id="canvas"
+            style={{ paddingTop: "57px" }}
             ref={ref => (canvas = ref)}
-            height={160}
-            width={340}
+            height={180}
+            width={1150}
         />
     );
 }
