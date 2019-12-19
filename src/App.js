@@ -8,6 +8,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import NavigationIcon from '@material-ui/icons/Navigation';
 import { Typography } from '@material-ui/core';
+import Game from './Game/Game';
 
 // import { createServerConnection } from './socket-api'
 const io = require('socket.io-client');
@@ -120,7 +121,7 @@ function App() {
       </div>
       <div className={classes.upBody}>
         <div className={classes.containerGame}>
-
+          <Game />
         </div>
         <div className={classes.controlPanel}>
           <Fab variant="extended" className={classes.button}>
