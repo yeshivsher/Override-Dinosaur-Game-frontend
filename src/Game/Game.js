@@ -17,7 +17,10 @@ const STATUS = {
 const JUMP_DELTA = 5;
 const JUMP_MAX_HEIGHT = 53;
 
-function App() {
+function App(props) {
+    // props.
+    const { isMine, obstacles_p } = props
+
     let canvas;
     let status;
     let options;
@@ -93,7 +96,12 @@ function App() {
         return res;
     };
 
-    obstacles = generateObstacles();
+    if (obstacles_p) {
+        obstacles = obstacles_p;
+    } else {
+        obstacles = generateObstacles();
+    }
+
 
     useEffect(() => {
         const onSpacePress = () => {
@@ -110,13 +118,15 @@ function App() {
             }
         };
 
-        window.onkeypress = e => {
-            if (e.key === " ") {
-                onSpacePress();
-            }
-        };
+        if (isMine) {
+            window.onkeypress = e => {
+                if (e.key === " ") {
+                    onSpacePress();
+                }
+            };
 
-        canvas.parentNode.onclick = onSpacePress;
+            canvas.parentNode.onclick = onSpacePress;
+        }
 
         window.onblur = pause;
         window.onfocus = goOn;

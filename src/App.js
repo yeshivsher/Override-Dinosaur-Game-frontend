@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,7 +12,7 @@ import Game from './Game/Game';
 
 // import { createServerConnection } from './socket-api'
 const io = require('socket.io-client');
-const socket = io('http://localhost:3005')
+// const socket = io('http://localhost:3005')
 
 const useStyles = makeStyles(theme => ({
   app: {
@@ -22,7 +22,8 @@ const useStyles = makeStyles(theme => ({
     height: '100vh',
     display: 'flex',
     justifyContent: 'center',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    overflow: 'auto'
   },
   header: {
     height: '10%',
@@ -32,8 +33,8 @@ const useStyles = makeStyles(theme => ({
     alignSelf: 'center',
     color: '#afb1b3'
   },
-  title:{
-    marginTop:10,
+  title: {
+    marginTop: 10,
   },
   upBody: {
     height: '50%',
@@ -52,6 +53,15 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     borderRadius: 10,
     alignSelf: 'center',
+  },
+  containerGameReval: {
+    width: '75%',
+    height: '80%',
+    backgroundColor: '#61dafb00',
+    textAlign: 'center',
+    borderRadius: 10,
+    alignSelf: 'center',
+
   },
   controlPanel: {
     width: '15%',
@@ -82,12 +92,17 @@ const useStyles = makeStyles(theme => ({
 
 function App() {
   const classes = useStyles();
-  // const [socket, setSocket] = useStyles({})
+  const [socket, setSocket] = useState()
+  const [obstacles_p, setObstacles_p] = useState()
 
   useEffect(function () {
-    console.log('useEffect App')
+    let socket = io("http://localhost:3005");
+    if (!socket) {
+      setSocket(socket)
+      console.log('useEffect App')
 
-    socket.emit('room', { room: 'test-room' });
+      socket.emit('room', { room: 'test-room' });
+    }
 
     // console.log("TCL: App -> socket", socket)
     // if (!socket || socket.disconnect) {
@@ -99,12 +114,16 @@ function App() {
     // if (socket && socket.connected) {
     //   socket.emit('userIdReceived', this.state.userId)
 
-    //   socket.on('userAuthenticated', (massage) => {
-    //     socket.emit('initTrackersLocations', this.state.userId)
-    //   })
+    socket.on('start game', (player) => {
+      console.log("TCL: App -> player", player)
+      // socket.emit('initTrackersLocations', this.state.userId)
 
-    //   socket.on('initTrackersLocations', (userTrackersData) => {
-    //   })
+    })
+
+    socket.on('obstacle', (obstacle) => {
+      console.log("TCL: App -> obstacle", obstacle)
+
+    })
 
     //   socket.on('location', (updatedLocation) => {
     //   })
@@ -121,7 +140,7 @@ function App() {
       </div>
       <div className={classes.upBody}>
         <div className={classes.containerGame}>
-          <Game />
+          <Game isMine={true} obstacles={obstacles_p} />
         </div>
         <div className={classes.controlPanel}>
           <Fab variant="extended" className={classes.button}>
@@ -137,8 +156,8 @@ function App() {
       </div>
       <div className={classes.middle}></div>
       <div className={classes.downBody}>
-        <div className={classes.containerGame}>
-
+        <div className={classes.containerGameReval}>
+          <Game isMine={false} obstacles={obstacles_p} />
         </div>
         <div className={classes.controlPanel}>
           <Fab variant="extended" className={classes.button}>
