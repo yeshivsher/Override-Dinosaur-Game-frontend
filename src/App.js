@@ -12,7 +12,7 @@ import Game from './Game/Game';
 
 // import { createServerConnection } from './socket-api'
 const io = require('socket.io-client');
-// const socket = io('http://localhost:3005')
+const socket = io('http://localhost:3005')
 
 const useStyles = makeStyles(theme => ({
   app: {
@@ -113,21 +113,25 @@ function App() {
   const [_socket, _setSocket] = useState()
   const [obstacles_p, setObstacles_p] = useState([])
   const [backgroundColorOverrided, setBackgroundColorOverrided] = useState(false)
+  const [backgroundColorOverridedRival, setBackgroundColorOverridedRival] = useState(false)
   const [overridedObstacles, setOverridedObstacles] = useState([])
 
   const sendObstacles = (obstacles) => {
-    if (_socket) {
+    if (socket) {
 
-      _socket.emit('obstacles', obstacles);
+      socket.emit('obstacles', obstacles);
     }
   }
 
   const handleChangeBackgroundButton = () => {
-    _socket.emit('change background to rival');
+    if (socket) {
+      socket.emit('change background to rival');
+      setBackgroundColorOverridedRival(!backgroundColorOverridedRival)
+    }
   }
 
   useEffect(function () {
-    let socket = io("http://localhost:3005");
+    // let socket = io("http://localhost:3005");
     if (!socket) {
       _setSocket(socket)
       console.log('useEffect App')
@@ -141,18 +145,18 @@ function App() {
 
     })
 
-    socket.on('change background to rival', () => {
+    socket.on('background changed to rival', () => {
       console.log("TCL: App -> change background to rival")
-      setBackgroundColorOverrided(backgroundColorOverrided)
+      setBackgroundColorOverrided(!backgroundColorOverrided)
       // socket.emit('initTrackersLocations', this.state.userId)
 
     })
 
     socket.on('rival send obstacle', (obstacles) => {
       console.log("TCL: recived -> obstacles", obstacles)
-      setObstacles_p(obstacles);
+      // setObstacles_p(obstacles);
     })
-  }, [])
+  }, [backgroundColorOverrided,obstacles_p])
 
   return (
     <div className={classes.app}>
@@ -162,7 +166,7 @@ function App() {
         </Typography>
       </div>
       <div className={classes.upBody}>
-        <div className={classes.containerGame} style={{ background: backgroundColorOverrided ? '#608bb0' : '#608bb000' }}>
+        <div className={classes.containerGame} style={{ background: backgroundColorOverrided == false ? '#61dafb' : '#61dafb00' }}>
           <Game isMine={true} overridedObstacles={overridedObstacles} sendObstacles={sendObstacles} />
         </div>
         <div className={classes.controlPanel}>
@@ -182,7 +186,7 @@ function App() {
       </div>
       <div className={classes.middle}></div>
       <div className={classes.downBody}>
-        <div className={classes.containerGameRival}>
+        <div className={classes.containerGameRival} style={{ background: backgroundColorOverridedRival == false ? '#61dafb' : '#61dafb00' }}>
           <Game isMine={false} obstacles_p={obstacles_p} overridedObstacles={overridedObstacles} sendObstacles={sendObstacles} />
         </div>
         <div className={classes.controlPanelRival}>
