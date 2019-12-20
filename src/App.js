@@ -53,17 +53,20 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     borderRadius: 10,
     alignSelf: 'center',
+    border: 'solid',
+    borderColor: 'darkorange'
   },
-  containerGameReval: {
+  containerGameRival: {
     width: '75%',
     height: '80%',
-    backgroundColor: '#61dafb00',
+    backgroundColor: '#61dafb',
     textAlign: 'center',
     borderRadius: 10,
     alignSelf: 'center',
 
   },
   controlPanel: {
+    color: '#afb1b3',
     width: '15%',
     height: '80%',
     textAlign: 'center',
@@ -74,6 +77,21 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'space-evenly',
     flexDirection: 'column'
+  },
+  controlPanelRival: {
+    color: '#afb1b3',
+    width: '15%',
+    height: '80%',
+    textAlign: 'center',
+    borderRadius: 10,
+    alignSelf: 'center',
+    background: '#608bb0',
+    marginLeft: 10,
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    flexDirection: 'column',
+    border: 'solid',
+    borderColor: 'darkorange'
   },
   button: {
     alignSelf: 'center',
@@ -92,27 +110,25 @@ const useStyles = makeStyles(theme => ({
 
 function App() {
   const classes = useStyles();
-  const [socket, setSocket] = useState()
-  const [obstacles_p, setObstacles_p] = useState()
+  const [_socket, _setSocket] = useState()
+  const [obstacles_p, setObstacles_p] = useState([])
+  const [overridedObstacles, setOverridedObstacles] = useState([])
+
+  const sendObstacles = (obstacles) => {
+    if (_socket) {
+
+      _socket.emit('obstacles', obstacles);
+    }
+  }
 
   useEffect(function () {
     let socket = io("http://localhost:3005");
     if (!socket) {
-      setSocket(socket)
+      _setSocket(socket)
       console.log('useEffect App')
 
       socket.emit('room', { room: 'test-room' });
     }
-
-    // console.log("TCL: App -> socket", socket)
-    // if (!socket || socket.disconnect) {
-    //   let tempSocket = await createServerConnection()
-    //   setSocket(tempSocket)
-    // }
-    // console.log("TCL: App -> socket", socket)
-
-    // if (socket && socket.connected) {
-    //   socket.emit('userIdReceived', this.state.userId)
 
     socket.on('start game', (player) => {
       console.log("TCL: App -> player", player)
@@ -120,14 +136,10 @@ function App() {
 
     })
 
-    socket.on('obstacle', (obstacle) => {
-      console.log("TCL: App -> obstacle", obstacle)
-
+    socket.on('obstacles', (obstacles) => {
+      console.log("TCL: recived -> obstacles", obstacles)
+      setObstacles_p(obstacles)
     })
-
-    //   socket.on('location', (updatedLocation) => {
-    //   })
-    // }
   }, [])
 
   return (
@@ -136,14 +148,16 @@ function App() {
         <Typography variant="h3" weight="medium" className={classes.title}>
           Multiplayer Dinosaur Game!
         </Typography>
-
       </div>
       <div className={classes.upBody}>
         <div className={classes.containerGame}>
-          <Game isMine={true} obstacles={obstacles_p} />
+          <Game isMine={true} overridedObstacles={overridedObstacles} sendObstacles={sendObstacles} />
         </div>
         <div className={classes.controlPanel}>
-          <Fab variant="extended" className={classes.button}>
+          <Typography variant="h4" weight="medium" >
+            You
+          </Typography>
+          {/* <Fab variant="extended" className={classes.button}>
             send request 1
       </Fab>
           <Fab variant="extended" className={classes.button}>
@@ -151,23 +165,26 @@ function App() {
       </Fab>
           <Fab variant="extended" className={classes.button}>
             send request 3
-      </Fab>
+      </Fab> */}
         </div>
       </div>
       <div className={classes.middle}></div>
       <div className={classes.downBody}>
-        <div className={classes.containerGameReval}>
-          <Game isMine={false} obstacles={obstacles_p} />
+        <div className={classes.containerGameRival}>
+          <Game isMine={false} obstacles_p={obstacles_p} overridedObstacles={overridedObstacles} sendObstacles={sendObstacles} />
         </div>
-        <div className={classes.controlPanel}>
+        <div className={classes.controlPanelRival}>
+          <Typography variant="h5" weight="medium" >
+            Controle Rival!
+          </Typography>
           <Fab variant="extended" className={classes.button}>
-            send request 1
+            Send Obstacle
       </Fab>
           <Fab variant="extended" className={classes.button}>
-            send request 2
+            Change Background
       </Fab>
           <Fab variant="extended" className={classes.button}>
-            send request 3
+            Send A Crow
       </Fab>
         </div>
       </div>

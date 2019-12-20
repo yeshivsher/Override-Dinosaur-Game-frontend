@@ -4,7 +4,7 @@ import dinosaur from "../img/dinosaur.png";
 import ground from "../img/ground.png";
 import dinosaur_left from "../img/dinosaur_left.png";
 import dinosaur_right from "../img/dinosaur_right.png";
-import dinosaur_die from "../img/dinosaur_die.png";
+import dinosaur_die from "../img/banana.png";
 import obstacle from "../img/obstacle.png";
 
 const STATUS = {
@@ -19,7 +19,7 @@ const JUMP_MAX_HEIGHT = 53;
 
 function App(props) {
     // props.
-    const { isMine, obstacles_p } = props
+    const { isMine, obstacles_p, overridedObstacles, sendObstacles } = props
 
     let canvas;
     let status;
@@ -96,10 +96,13 @@ function App(props) {
         return res;
     };
 
-    if (obstacles_p) {
-        obstacles = obstacles_p;
-    } else {
+    if (isMine) {
         obstacles = generateObstacles();
+        if (sendObstacles && sendObstacles.length) {
+            sendObstacles(obstacles)
+        }
+    } else if (obstacles_p && Array.isArray(obstacles_p) && obstacles_p.length) {
+        obstacles = obstacles_p;
     }
 
 
@@ -286,36 +289,39 @@ function App(props) {
 
         // 障碍
         let pop = 0;
-        for (let i = 0; i < obstacles.length; ++i) {
-            if (currentDistance >= obstacles[i].distance) {
-                let offset =
-                    width -
-                    (currentDistance - obstacles[i].distance + groundSpeed);
-                if (offset > 0) {
-                    ctx.drawImage(options.obstacleImage, offset, 84);
+        if (obstacles) {
+            for (let i = 0; i < obstacles.length; ++i) {
+                if (currentDistance >= obstacles[i].distance) {
+                    let offset =
+                        width -
+                        (currentDistance - obstacles[i].distance + groundSpeed);
+                    if (offset > 0) {
+                        ctx.drawImage(options.obstacleImage, offset, 84);
+                    } else {
+                        ++pop;
+                    }
                 } else {
-                    ++pop;
+                    break;
                 }
-            } else {
-                break;
             }
-        }
-        for (let i = 0; i < pop; ++i) {
-            obstacles.shift();
-        }
-        if (obstacles.length < 5) {
-            obstacles = obstacles.concat(obstaclesGenerate());
-        }
+            for (let i = 0; i < pop; ++i) {
+                obstacles.shift();
+            }
+            if (obstacles.length < 5) {
+                obstacles = obstacles.concat(obstaclesGenerate());
+            }
 
-        // 碰撞检测
-        let firstOffset =
-            width - (currentDistance - obstacles[0].distance + groundSpeed);
-        if (
-            90 - obstacleWidth < firstOffset &&
-            firstOffset < 60 + playerWidth &&
-            64 - jumpHeight + playerHeight > 84
-        ) {
-            stop();
+            // 碰撞检测
+            let firstOffset =
+                width - (currentDistance - obstacles[0].distance + groundSpeed);
+
+            if (
+                90 - obstacleWidth < firstOffset &&
+                firstOffset < 60 + playerWidth &&
+                64 - jumpHeight + playerHeight > 84
+            ) {
+                stop();
+            }
         }
 
         ctx.restore();
