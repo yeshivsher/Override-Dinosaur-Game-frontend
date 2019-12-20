@@ -136,9 +136,9 @@ function App() {
 
     })
 
-    socket.on('obstacles', (obstacles) => {
+    socket.on('rival send obstacle', (obstacles) => {
       console.log("TCL: recived -> obstacles", obstacles)
-      setObstacles_p(obstacles)
+      setObstacles_p(obstacles);
     })
   }, [])
 

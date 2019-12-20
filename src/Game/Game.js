@@ -103,6 +103,7 @@ function App(props) {
         }
     } else if (obstacles_p && Array.isArray(obstacles_p) && obstacles_p.length) {
         obstacles = obstacles_p;
+        onSpacePress();
     }
 
 
