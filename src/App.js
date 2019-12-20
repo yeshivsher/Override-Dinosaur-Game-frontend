@@ -112,6 +112,7 @@ function App() {
   const classes = useStyles();
   const [_socket, _setSocket] = useState()
   const [obstacles_p, setObstacles_p] = useState([])
+  const [backgroundColorOverrided, setBackgroundColorOverrided] = useState(false)
   const [overridedObstacles, setOverridedObstacles] = useState([])
 
   const sendObstacles = (obstacles) => {
@@ -119,6 +120,10 @@ function App() {
 
       _socket.emit('obstacles', obstacles);
     }
+  }
+
+  const handleChangeBackgroundButton = () => {
+    _socket.emit('change background to rival');
   }
 
   useEffect(function () {
@@ -132,6 +137,13 @@ function App() {
 
     socket.on('start game', (player) => {
       console.log("TCL: App -> player", player)
+      // socket.emit('initTrackersLocations', this.state.userId)
+
+    })
+
+    socket.on('change background to rival', () => {
+      console.log("TCL: App -> change background to rival")
+      setBackgroundColorOverrided(backgroundColorOverrided)
       // socket.emit('initTrackersLocations', this.state.userId)
 
     })
@@ -150,7 +162,7 @@ function App() {
         </Typography>
       </div>
       <div className={classes.upBody}>
-        <div className={classes.containerGame}>
+        <div className={classes.containerGame} style={{ background: backgroundColorOverrided ? '#608bb0' : '#608bb000' }}>
           <Game isMine={true} overridedObstacles={overridedObstacles} sendObstacles={sendObstacles} />
         </div>
         <div className={classes.controlPanel}>
@@ -180,7 +192,9 @@ function App() {
           <Fab variant="extended" className={classes.button}>
             Send Obstacle
       </Fab>
-          <Fab variant="extended" className={classes.button}>
+          <Fab variant="extended" className={classes.button} onClick={() => {
+            handleChangeBackgroundButton()
+          }}>
             Change Background
       </Fab>
           <Fab variant="extended" className={classes.button}>
